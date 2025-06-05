@@ -14,6 +14,13 @@ if [[ "{SCRIPT_BASE_DIR}" == "${PWD}" ]] ; then
   exit 1
 fi
 
-${SCRIPT_BASE_DIR}/../symlink_files.sh
+echo "Moving .bash_profile to .bash_profile.orig so we can symlink ours"
+if [[ -f .bash_profile ]] ; then
+  mv .bash_profile .bash_profile.orig
+fi
+
+${SCRIPT_BASE_DIR}/../symlink-files.sh
+
+echo "Creating copy of .gitdist so edits do not affect the host machine"
 rm .gitconfig
 cp ${SCRIPT_BASE_DIR}/../.gitconfig .gitconfig

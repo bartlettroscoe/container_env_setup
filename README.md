@@ -10,14 +10,16 @@ When opening the container, mount the directory with `docker run` (or `podman
 run`) mounting the base repo with the argument:
 
 ```bash
-  -v /home/<user-name>/personal_cygwin_laptop_home:/mounted/personal_cygwin_laptop_home
+  -v /home/<user-name>/personal_cygwin_laptop_home:<home-dir>/personal_cygwin_laptop_home
 ```
+
+(e.g., `<home-dir>` = `/root`?)
 
 Then, once in the container, just do:
 
 ```bash
-$ cd   # Takes you to /home/root/?
-$ /mounted/personal_cygwin_laptop_home/rab_container_tools/set_up_home_dir_env.sh
+$ cd   # Takes you to <home-dir>?
+$ ./personal_cygwin_laptop_home/rab_container_tools/set_up_home_dir_env.sh
 ```
 
 and you can then load your env with:
@@ -33,8 +35,8 @@ To work on git repos setup to work with gitdist inside of the container, you
 will need to run the script:
 
 ```bash
-$ cd <base-repo>/
-$ /mounted/personal_cygwin_laptop_home/rab_container_tools/gitdist_make_safe_repos.sh
+$ cd <base-git-repo>/
+$ ~/personal_cygwin_laptop_home/rab_container_tools/gitdist_make_safe_repos.sh
 ```
 
 NOTE: That script modifies the global `~/.gitconfig` file, but that file is just
