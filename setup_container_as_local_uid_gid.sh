@@ -7,19 +7,21 @@
 #
 # Called as:
 #
-#   setup_container_as_local_uid_gid.sh <requested_username> <local_userid>
-#   <local_groupid>
+#   setup_container_as_local_uid_gid.sh
 #
-# If an existing group with gid=<local_groupid> is found, it will use that group
+# This reads the environment variables LOCAL_USERNAME, LOCAL_UID, and LOCAL_GID
+# (set by VSCode .devcontainer.json)  
+#
+# If an existing group with gid=${LOCAL_GROUP} is found, it will use that group
 # and no new group will be created.
 #
-# If an existing user with uid=<local_userid> is found, it will use that user
-# and no new user will be created.
+# If an existing user with uid=${LOCAL_USER} is found, it will use that user and
+# no new user will be created.
 #
 
-requested_username="$1"; shift
-local_userid="$1"; shift
-local_groupid="$1"; shift 
+requested_username=${LOCAL_USERNAME}
+local_userid=${LOCAL_UID}
+local_groupid=${LOCAL_GID}
 
 # Determine the actual username to use
 if getent passwd "$local_userid" > /dev/null; then
@@ -58,7 +60,7 @@ fi
 # Add the user to the sudo group
 if ! groups "$local_username" | grep -q '\bsudo\b'; then
   echo "Adding user $local_username to the sudo group"
-  usermod -aG sudo "$local_username"
+  usermod -aG sudo "$local_username" || echo "There is no sudo group, skipping"
 else
   echo "User $local_username is already in the sudo group"
 fi
@@ -73,15 +75,15 @@ else
 fi
 
 # Symlink mounted directories into users home directory
-if [ -d "/tmp/mounted_from_host" ]; then
-  echo "Symlinking from /tmp/mounted_from_host/* to /home/$local_username"
+if [ -d "/mounted_from_host" ]; then
+  echo "Symlinking from /mounted_from_host/* to /home/$local_username"
   cd /home/$local_username
-  ln -s /tmp/mounted_from_host/* .
+  ln -s /mounted_from_host/* . || echo "Symlinks already exist!"
 else
-  echo "/tmp/mounted_from_host does not exist, skipping file move"
+  echo "/mounted_from_host does not exist, skipping file move"
 fi
 
 echo "Dev Container setup complete for user: $local_username ($local_userid:$local_groupid)"
 
-#echo "Become the user $local_username"
-#exec su - "$local_username" -c "bash --rcfile /home/$local_username/.bashrc"
+echo "Become the user $local_username: Next, run the command ./personal_cygwin_laptop_home/rab_container_tools/set_up_home_dir_env.sh then do '. .bash_profile'"
+exec su - "$local_username" -c "bash --rcfile /home/$local_username/.bashrc"
