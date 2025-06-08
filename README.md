@@ -1,42 +1,76 @@
-# Ross Bartlett's container tools
+# Container environment setup tools
 
-This little repo contains instructions and tools for setting up my dev env
-inside of a container.
+This repo contains instructions and scripts for setting up a development
+environment inside of a container to run as a local user with the same UID and
+GID as the host user.
 
-This repo should be cloned under the ~/personal_cygwin_laptop_home repo.  (That
-can be done with the script ~/personal_cygwin_laptop_home/clone.repos.sh)
+This sets up the container so that it creates files with the same UID and GID as
+the local user launching the container.  
 
-When opening the container, mount the directory with `docker run` (or `podman
-run`) mounting the base repo with the argument:
+## Docker mounts
+
+This repo should be cloned under the a base repo `<personal-home-dir-setup>`
+containing your personal env setup with (e.g., `~/rab_home_dir_setup/` for
+@bartlettroscoe) setup the local machine`.
+
+When opening the container, mount the base directory with `docker run` (or
+`podman run`) with the `docker run` argument:
 
 ```bash
-  -v /home/<user-name>/personal_cygwin_laptop_home:<home-dir>/personal_cygwin_laptop_home
+  -v /home/<user-name>/<personal-home-dir-setup>:/mounted_from_host/<personal-home-dir-setup>
 ```
 
-(e.g., `<home-dir>` = `/root`?)
+(e.g., `<personal-home-dir-setup>` = `rab_home_dir_setup`)
 
-Then, once in the container, just do:
+## Setting up a local user in the container
+
+Once in the container as `root`, first set up a local user in the container with
+the same UID and GUD as the host user using:
 
 ```bash
-$ cd   # Takes you to <home-dir>?
-$ ./personal_cygwin_laptop_home/rab_container_tools/set_up_home_dir_env.sh
+/mounted_from_host/<personal-home-dir-setup>/container_env_setup/setup_container_as_local_uid_gid.sh
 ```
 
-and you can then load your env with:
+That will set up a new user with the same name as the host user, or use an
+existing user in the container that has the same UID.  This will also create a
+new group with GID if it does not already exist and add the local user to that
+group (if a group with that GID does not already exist).
+
+Once `setup_container_as_local_uid_gid.sh` has been run, as `root`, become the
+local user by running:
 
 ```bash
-$ bash   # Just in case you type exit by accident!
-$ . .bash_profile
+~/become_localuser.sh [-p]
 ```
 
-See that script for details about what it is doing!
+If the argument [-p] is passed in, then the local user's `.bash_profile` file is
+sourced.  Otherwise, the local user's `.bashrc` file is sourced when running the
+new shell.
 
-To work on git repos setup to work with gitdist inside of the container, you
-will need to run the script:
+Once becoming the local user, set up its home dir env using:
 
 ```bash
-$ cd <base-git-repo>/
-$ ~/personal_cygwin_laptop_home/rab_container_tools/gitdist_make_safe_repos.sh
+./<personal-home-dir-setup>/container_env_setup/set_up_home_dir_env.sh
+```
+
+After that, the local user's `.bash_profile` fill will load the local users
+custom env.
+
+NOTE: Without setting up and using a local user with the same UID and GID as the
+host user, running as `root` in the container will result in `root` owning any
+files or directories it creates or modifies.  This will result in the host user
+outside of the container not being able to change, delete, or even read those
+files (depending on the permissions) which were changed or created by the `root`
+user inside of the container. 
+
+## Allow Git operations on mounted git repos
+
+If running as `root`, to work on git repos setup to work with gitdist inside of
+the container, you will need to run the script:
+
+```bash
+cd <base-git-repo>/
+~/<personal-home-dir-setup>/container_env_setup/gitdist_make_safe_repos.sh
 ```
 
 NOTE: That script modifies the global `~/.gitconfig` file, but that file is just
