@@ -1,16 +1,17 @@
 #!/bin/bash -e
 #
-# This script sets up the container to run with the same UID and GID as the host
-# user.  That way, the container can read and write files in the host user's
-# home directory without permission issues. And any files created in the
-# container will be owned by the host user.
+# This script sets up the container to run as a user with the same UID and GID
+# as the host user.  That way, that user in the container can create and write
+# files and directories in the host user's mounted directory and those files and
+# directories will be owned by the host user, not root, on the host hose
+# machine.
 #
-# Called as:
+# Once the container is first started up, this script must be run once.
 #
 #   setup_container_as_local_uid_gid.sh
 #
 # This reads the environment variables LOCAL_USERNAME, LOCAL_UID, and LOCAL_GID
-# (set by VSCode .devcontainer.json)  
+# (i.e. put into /root/.bashrc by VSCode devcontainer.json)  
 #
 # If an existing group with gid=${LOCAL_GROUP} is found, it will use that group
 # and no new group will be created.
@@ -18,6 +19,11 @@
 # If an existing user with uid=${LOCAL_USER} is found, it will use that user and
 # no new user will be created.
 #
+# After this script is run, it symlinks the script /root/become_localuser.sh.
+# That script is then run to become the local user and get into their shell.
+#
+
+SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 requested_username=${LOCAL_USERNAME}
 local_userid=${LOCAL_UID}
@@ -76,14 +82,20 @@ fi
 
 # Symlink mounted directories into users home directory
 if [ -d "/mounted_from_host" ]; then
-  echo "Symlinking from /mounted_from_host/* to /home/$local_username"
-  cd /home/$local_username
-  ln -s /mounted_from_host/* . || echo "Symlinks already exist!"
+  for dir in /mounted_from_host/*; do
+    if [ -d "$dir" ]; then
+      echo "Symlinking directory $dir to /home/$local_username"
+      ln -s "$dir" "/home/$local_username/$(basename "$dir")" || echo "Symlink for $(basename "$dir") already exists!"
+    else
+      echo "Skipping non-directory $dir"
+    fi
+  done
 else
-  echo "/mounted_from_host does not exist, skipping file move"
+  echo "/mounted_from_host does not exist, skipping symlinking"
 fi
+
+echo "Symlinking ${HOME}/become_localuser.sh"
+ln -sf "${SCRIPT_BASE_DIR}/become_localuser.sh" "${HOME}/become_localuser.sh"
 
 echo "Dev Container setup complete for user: $local_username ($local_userid:$local_groupid)"
 
-echo "Become the user $local_username: Next, run the command ./personal_cygwin_laptop_home/rab_container_tools/set_up_home_dir_env.sh then do '. .bash_profile'"
-exec su - "$local_username" -c "bash --rcfile /home/$local_username/.bashrc"
