@@ -50,7 +50,7 @@ new shell.
 Once becoming the local user, set up its home dir env using:
 
 ```bash
-./<personal-home-dir-setup>/container_env_setup/set_up_home_dir_env.sh
+./<personal-home-dir-setup>/container_env_setup/setup_home_dir_env.sh
 ```
 
 After that, the local user's `.bash_profile` fill will load the local users
