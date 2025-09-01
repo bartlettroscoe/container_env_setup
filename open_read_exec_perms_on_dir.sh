@@ -1,15 +1,28 @@
 #!/bin/bash -e
 #
-# Open read and execute permissions on a given home directory if it exists:
+# Open read and execute permissions on a given directory <basedir>/<subdir> if
+# <subdir> is non-empty:
 #
-#   open_read_exec_perms_on_dir.sh <base-dir>
+#   open_read_exec_perms_on_dir.sh <basedir> <subdir>
 #
 
-base_dir=$1
+basedir=$1
+subdir=$2
 
-if [[ -d "${base_dir}" ]]; then
-  echo "Opening read and execute permissions on directory: ${base_dir}"
-  chmod -R a+rX "${base_dir}"
+if [[ "${subdir}" != "" ]] ; then
+  path_to_open_up="${basedir}/${subdir}"
+  if [[ -d "${path_to_open_up}" ]]; then
+    echo "Opening read, write and execute permissions on directory: ${path_to_open_up}"
+    chmod o+rwx,g+rwx ${path_to_open_up}
+    find ${path_to_open_up} -type f -perm /u+r -exec chmod o+r,g+r {} +
+    find ${path_to_open_up} -type f -perm /u+w -exec chmod o+w,g+w {} +
+    find ${path_to_open_up} -type f -perm /u+x -exec chmod o+x,g+x {} +
+    find ${path_to_open_up} -type d -perm /u+r -exec chmod o+r,g+r {} +
+    find ${path_to_open_up} -type d -perm /u+w -exec chmod o+w,g+w {} +
+    find ${path_to_open_up} -type d -perm /u+x -exec chmod o+x,g+x {} +
+  else
+    echo "Directory does not exist: ${path_to_open_up}"
+  fi
 else
-  echo "Directory does not exist: ${base_dir}"
+  echo "passed in subdir is empty!"
 fi
