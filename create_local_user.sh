@@ -13,44 +13,51 @@
 # This script will return to STDOUT the last line the user with the <local_uid>.
 # This could be <requested_username> or an existing user that has <local_uid>.
 #
+# If <local_uid> or <local_gid> are empty, then the script will do nothing.
+#
 
 # Input args
 requested_username=$1
-local_userid=$2
-local_groupid=$3
+local_uid=$2
+local_gid=$3
 sudo_arg=$4
 
+if [[ "${local_uid}" == "" ]] || [[ "${local_gid}" == "" ]] ; then
+  echo "local_uid='${local_uid}', local_uid='${local_uid}', skipping creation of '${requested_username}'"
+  exit 0
+fi
+
 # Determine the actual username to use, in case user with UID already exists
-if getent passwd "$local_userid" > /dev/null; then
-  local_username=$(getent passwd "$local_userid" | cut -d: -f1)
-  echo "User with UID $local_userid already exists as '$local_username'"
+if getent passwd "$local_uid" > /dev/null; then
+  local_username=$(getent passwd "$local_uid" | cut -d: -f1)
+  echo "User with UID $local_uid already exists as '$local_username'"
 else
   local_username="$requested_username"
 fi
 
-echo "Set up local user: $local_username ($local_userid:$local_groupid)"
+echo "Set up local user: $local_username ($local_uid:$local_gid)"
 
 # Create the group if it does not exist
-if ! getent group "$local_groupid" > /dev/null; then
-  echo "Creating new group $requested_username with gid=$local_groupid"
-  groupadd -g "$local_groupid" "$requested_username"
+if ! getent group "$local_gid" > /dev/null; then
+  echo "Creating new group $requested_username with gid=$local_gid"
+  groupadd -g "$local_gid" "$requested_username"
 else
-  echo "Group with GID=$local_groupid already exists"
+  echo "Group with GID=$local_gid already exists"
 fi
 
 # Create the user if it does not exist with the matching UID
-if ! getent passwd "$local_userid" > /dev/null; then
-  echo "Creating user $local_username with UID=$local_userid and GID=$local_groupid"
-  useradd -m -u "$local_userid" -g "$local_groupid" -s /bin/bash "$local_username"
+if ! getent passwd "$local_uid" > /dev/null; then
+  echo "Creating user $local_username with UID=$local_uid and GID=$local_gid"
+  useradd -m -u "$local_uid" -g "$local_gid" -s /bin/bash "$local_username"
 else
-  echo "Using existing user $local_username with UID $local_userid"
+  echo "Using existing user $local_username with UID $local_uid"
   
   # Check if the existing user is in the target group with GID
-  if ! groups "$local_username" | grep -q "\b$local_groupid\b"; then
-    echo "Adding existing user $local_username to group $local_groupid"
-    usermod -aG "$local_groupid" "$local_username"
+  if ! groups "$local_username" | grep -q "\b$local_gid\b"; then
+    echo "Adding existing user $local_username to group $local_gid"
+    usermod -aG "$local_gid" "$local_username"
   else
-    echo "User $local_username is already in group $local_groupid"
+    echo "User $local_username is already in group $local_gid"
   fi
 fi
 
@@ -58,7 +65,7 @@ fi
 if [[ ! -d "/home/$local_username" ]] ; then
   echo "Creating home directory for user $local_username"
   mkdir -p "/home/$local_username"
-  chown "$local_userid":"$local_groupid" "/home/$local_username"
+  chown "$local_uid":"$local_gid" "/home/$local_username"
 else
   echo "Home directory for user $local_username already exists"
 fi
