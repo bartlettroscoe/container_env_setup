@@ -4,7 +4,7 @@
 # a given directory <basedir>/<subdir> if <subdir> is non-empty and
 # <basedir>/<subdir> exists:
 #
-#   open_read_exec_perms_on_dir.sh <basedir> <subdir>
+#   open_perms_on_dir.sh <basedir> <subdir>
 #
 
 basedir=$1
