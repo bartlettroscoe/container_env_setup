@@ -1,7 +1,8 @@
 #!/bin/bash -e
 #
-# Open read and execute permissions on a given directory <basedir>/<subdir> if
-# <subdir> is non-empty:
+# Open the same read, write, execute permissions as the owning owner for all for
+# a given directory <basedir>/<subdir> if <subdir> is non-empty and
+# <basedir>/<subdir> exists:
 #
 #   open_read_exec_perms_on_dir.sh <basedir> <subdir>
 #
@@ -24,5 +25,5 @@ if [[ "${subdir}" != "" ]] ; then
     echo "Directory does not exist: ${path_to_open_up}"
   fi
 else
-  echo "passed in subdir is empty!"
+  echo "Passed in subdir is empty!"
 fi
