@@ -10,6 +10,9 @@
 # access everything already.   Also, if either <existing_user> or <new_user> are
 # empty, this is skipped.
 #
+# Note that <new_user> does not need to actaully exist.  It just needs to be
+# different than <existing_user> to trigger oppening the permsision.
+#
 
 path_to_open_up=$1
 existing_user=$2
