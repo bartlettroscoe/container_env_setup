@@ -8,7 +8,7 @@
 # See the README.md file in this directory for further instructions.
 #
 
-ARG BASE_IMAGE=
+ARG BASE_IMAGE=does_not_exist_you_must_set_this_as_build_arg
 FROM ${BASE_IMAGE}
 
 # Set up the users
