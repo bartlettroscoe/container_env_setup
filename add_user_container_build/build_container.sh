@@ -3,9 +3,8 @@
 # Create a derived container adding <new_username> that matches UID:GID of host
 # user:
 #
-#   cd container_env_setup/
-#   ./build_container.sh
-#   <base-image-name>:<base-image-tag> <new-username>
+#   <this-dir>/add_user_container_build/build_container.sh \
+#     <base-image-name>:<base-image-tag> <new-username>
 #
 # To only do a dry-run and see what commands would be called, set the env var:
 #
@@ -15,6 +14,10 @@
 # Input command-line args
 base_image_and_tag=$1; shift
 new_username=$1; shift
+
+SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -L)"
+cd $(realpath "${SCRIPT_BASE_DIR}/..")
+echo ${PWD}
 
 # Dry run?
 if [[ "${BUILD_CONTAINER_DRY_RUN}" == "1" ]] ; then

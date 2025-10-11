@@ -22,7 +22,17 @@ When opening the container, mount the base directory with `docker run` (or
 
 (e.g., `<personal-home-dir-setup>` = `rab_home_dir_setup`)
 
-## Setting up a local user in the container
+## Building a derived container that adds a local user matching the host user UID and GID
+
+To build a derived container that adds a user with the same UID and GID as the
+host user, see the instructions in
+[add_user_container_build/README.md](./add_user_container_build/README.md).q
+
+## Adding a local user matching the host user UID and GID in a running container
+
+On can also set up a user in a running container that the UID and GUI of the
+host user.  While one can do this, it is recommended to build a derived
+container as described above.
 
 Once in the container as `root`, first set up a local user in the container with
 the same UID and GUD as the host user using:
