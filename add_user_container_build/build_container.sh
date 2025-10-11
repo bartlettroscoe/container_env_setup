@@ -48,7 +48,8 @@ export BASE_IMAGE=${base_image_and_tag} \
   --build-arg HOST_UID=${HOST_UID} \
   --build-arg HOST_GID=${HOST_GID} \
   --build-arg OPEN_EXISTING_USER=${OPEN_EXISTING_USER} \
-  -f add_user_container_build/Dockerfile .
+  -f add_user_container_build/Dockerfile . \
+  || exit $?
 
 echo "Tagging ${derived_image_and_date_tag}"
 ${COMMAND_ECHO_PREFIX} docker tag ${DERIVED_IMAGE} ${derived_image_and_date_tag}
