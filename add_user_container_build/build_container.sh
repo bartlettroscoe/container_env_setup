@@ -19,6 +19,16 @@ SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -L
 cd $(realpath "${SCRIPT_BASE_DIR}/..")
 echo ${PWD}
 
+if [[ "${base_image_and_tag}" == "" ]] ; then
+  echo "Missing <base-image-name>:<base-image-tag>"
+  exit 1
+fi
+
+if [[ "${new_username}" == "" ]] ; then
+  echo "Missing <new-username>"
+  exit 2
+fi
+
 # Dry run?
 if [[ "${BUILD_CONTAINER_DRY_RUN}" == "1" ]] ; then
   COMMAND_ECHO_PREFIX=echo
