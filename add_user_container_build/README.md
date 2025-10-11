@@ -8,47 +8,22 @@ CD to the base repo `container_env_setup` as:
 cd container_env_setup/
 ```
 
-then build a derived container as:
+then build a derived container using the script
+[`build_container.sh`](./build_container.sh) as:
 
 ```bash
-export BASE_IMAGE=trilinos-clang-19.1.6-openmpi-4.1.6:latest \
-&& export NEW_USERNAME=${USER} \
-&& export HOST_UID=$(id -u) \
-&& export HOST_GID=$(id -g) \
-&& export OPEN_EXISTING_USER= \
-&& export DERIVED_IMAGE=trilinos-clang-19.1.6-openmpi-4.1.6-${NEW_USERNAME}:latest \
-&& docker build \
-  -t ${DERIVED_IMAGE} \
-  --build-arg BASE_IMAGE=${BASE_IMAGE} \
-  --build-arg NEW_USERNAME=${NEW_USERNAME} \
-  --build-arg HOST_UID=${HOST_UID} \
-  --build-arg HOST_GID=${HOST_GID} \
-  --build-arg OPEN_EXISTING_USER=${OPEN_EXISTING_USER} \
-  -f add_user_container_build/Dockerfile .
+./add_user_container_build/build_container.sh \
+  codex-mull-trilinos-clang-18.1.8-openmpi-4.1.6:latest \
+  ${USER}
 ```
 
-NOTE: If there is already a user in the base image `BASE_IMAGE` that matches the
-UID and GID of the host user `${USER}`, then use that username for
-`NEW_USERNAME` above and set `OPEN_EXISTING_USER=` if that is the same user. In
-this case, the only effect will be to set teh default user as `${NEW_USERNAME}`.
+NOTE: This also add date tag `<YYYY>-<MM>-<DD>` for the image.
+
+NOTE: If there is already a user `<existing-user>` in the base image that
+matches the UID and GID of the host user `${USER}`, then use that user name
+`<existing-user>` instead of `${USER}` above.  In this case, the only effect
+will be to set the default user as `<existing-user>`.
 
 NOTE: For Trilinos container there is a user `runner` that has UID:GID =
 1000:1000.   And on WSL systems, you user is likely also UID:GID = 1000:000.  In
-this case, you would set:
-
-```bash
-export NEW_USERNAME=${USER}
-```
-
-If you do need to open up the existing user directory `/home/runner`, also add set:
-
-```bash
-export OPEN_EXISTING_USER=runner
-```
-
-But newer Trilinos containers should have the `/home/runner` directory already
-opened up.
-
-
-
-
+this case, you pass in `${USER}`.
