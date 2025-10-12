@@ -6,7 +6,7 @@
 #     [<remote-prefix> [<push-prefix>]]
 #
 # Creates the tag:
-#    <image-name>:$(date +%Y-%m-%d)
+#    <image-name>:<YYYY>-<MM>-<DD>
 #
 # If <remote-prefix> != "", then the following remote prefixed tags are created:
 #   <remote-prefix>/<image-name>:<image-tag>
