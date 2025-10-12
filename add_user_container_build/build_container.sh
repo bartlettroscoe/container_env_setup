@@ -17,7 +17,6 @@ new_username=$1; shift
 
 SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -L)"
 cd $(realpath "${SCRIPT_BASE_DIR}/..")
-echo ${PWD}
 
 if [[ "${base_image_and_tag}" == "" ]] ; then
   echo "Missing <base-image-name>:<base-image-tag>"
