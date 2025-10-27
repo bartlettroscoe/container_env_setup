@@ -8,7 +8,8 @@ CD to the base repo `container_env_setup` as:
 cd container_env_setup/
 ```
 
-then do the `docker build`:
+then do the `docker build` (for example with the base image
+`trilinos-clang-19.1.6-openmpi-4.1.6:latest`) as:
 
 ```bash
 export BASE_IMAGE=trilinos-clang-19.1.6-openmpi-4.1.6:latest \
@@ -51,6 +52,6 @@ matches the UID and GID of the host user `${USER}`, then use that user name
 `<existing-user>` instead of `${USER}` above.  In this case, the only effect
 will be to set the default user as `<existing-user>`.
 
-NOTE: For Trilinos container there is a user `runner` that has UID:GID =
+NOTE: For Trilinos container images there is a user `runner` that has UID:GID =
 1000:1000.   And on WSL systems, you user is likely also UID:GID = 1000:000.  In
 this case, you pass in `${USER}`.
