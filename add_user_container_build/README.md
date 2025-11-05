@@ -39,12 +39,12 @@ any base directory as:
 
 ```bash
 <this-dir>/add_user_container_build/build_container.sh \
-  codex-mull-trilinos-clang-18.1.8-openmpi-4.1.6:latest \
+  codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6:latest \
   ${USER}
 ```
 
 which creates the image
-`codex-mull-trilinos-clang-18.1.8-openmpi-4.1.6-${USER}:latest` and also adds
+`codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6-${USER}:latest` and also adds
 the date tag `<YYYY>-<MM>-<DD>` for the generated image.
 
 NOTE: If there is already a user `<existing-user>` in the base image that
