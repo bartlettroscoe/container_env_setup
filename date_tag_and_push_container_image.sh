@@ -17,8 +17,11 @@
 
 # Input command-line args
 image_and_tag=$1; shift
-remote_prefix=${1:""}; shift
-push_prefix=${1:""}; shift
+#echo "image_and_tag = $image_and_tag"
+remote_prefix=$1; shift
+#echo "remote_prefix = $remote_prefix"
+push_prefix=$1; shift
+#echo "push_prefix = $push_prefix"
 
 # Dry run?
 if [[ "${BUILD_CONTAINER_DRY_RUN}" == "1" ]] ; then
@@ -28,12 +31,11 @@ else
 fi
 
 # Image name and tags
-image_name=${image_and_tag%%:*}
+image_name=$(echo "${image_and_tag}" | sed 's#.*/##; s/:.*//')
 #echo "image_name = $image_name"
-tag=${image_and_tag#*:}
-#echo "image_tag = $image_tag"
 date_tag=$(date +%Y-%m-%d)
 image_and_date_tag=${image_name}:${date_tag}
+#echo "image_and_date_tag = $image_and_date_tag"
 
 echo "Tagging ${image_and_date_tag}"
 ${COMMAND_ECHO_PREFIX} docker tag ${image_and_tag} ${image_and_date_tag}
