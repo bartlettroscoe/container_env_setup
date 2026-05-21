@@ -26,6 +26,10 @@
 # On the completion of this script, the file at <file-path> will contain the
 # most recent full image name and tag.
 #
+# NOTE: When doing a dry-run to see the commands that would be called, set:
+#
+#   export BUILD_CONTAINER_DRY_RUN=1
+#
 
 # Input command-line args
 image_and_tag=$1; shift
@@ -36,6 +40,7 @@ push_prefix=$1; shift
 #echo "push_prefix = $push_prefix"
 
 SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -L)"
+source ${SCRIPT_BASE_DIR}/use_docker_or_podman.sh
 
 # Dry run?
 if [[ "${BUILD_CONTAINER_DRY_RUN}" == "1" ]] ; then
@@ -95,7 +100,7 @@ if [[ "${apply_date_tag}" == "1" ]] ; then
   image_and_date_tag=${image_base_name}:${date_tag}
   #echo "image_and_date_tag = $image_and_date_tag"
   echo "Tagging ${image_and_date_tag}"
-  ${COMMAND_ECHO_PREFIX} docker tag ${image_and_tag} ${image_and_date_tag}
+  ${COMMAND_ECHO_PREFIX} ${docker_tag} ${image_and_tag} ${image_and_date_tag}
 fi
 
 # Write the full image name and tag to the file
@@ -110,13 +115,13 @@ fi
 if [[ "${remote_prefix}" != "" ]] ; then
   remote_prefix_image_name=${remote_prefix}/${image_base_name}
   echo "Tagging ${remote_prefix_image_name}:${image_tag}"
-  ${COMMAND_ECHO_PREFIX} docker tag ${image_and_tag} ${remote_prefix_image_name}:${image_tag}
+  ${COMMAND_ECHO_PREFIX} ${docker_tag} ${image_and_tag} ${remote_prefix_image_name}:${image_tag}
   echo "Tagging ${remote_prefix_image_name}:${date_tag}"
-  ${COMMAND_ECHO_PREFIX} docker tag ${image_and_tag} ${remote_prefix_image_name}:${date_tag}
+  ${COMMAND_ECHO_PREFIX} ${docker_tag} ${image_and_tag} ${remote_prefix_image_name}:${date_tag}
   if [[ "${push_prefix}" == "push" ]] ; then
     echo "Pushing ${remote_prefix_image_name}:${image_tag}"
-    ${COMMAND_ECHO_PREFIX} docker push ${remote_prefix_image_name}:${image_tag}
+    ${COMMAND_ECHO_PREFIX} ${docker_push} ${remote_prefix_image_name}:${image_tag}
     echo "Pushing ${remote_prefix_image_name}:${date_tag}"
-    ${COMMAND_ECHO_PREFIX} docker push ${remote_prefix_image_name}:${date_tag}
+    ${COMMAND_ECHO_PREFIX} ${docker_push} ${remote_prefix_image_name}:${date_tag}
   fi
 fi
