@@ -39,20 +39,26 @@ any base directory as:
 
 ```bash
 <this-dir>/add_user_container_build/build_container.sh \
-  codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6:latest \
-  ${USER}
+  codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6:latest
 ```
 
 which creates the image
 `codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6-${USER}:latest` and also adds
 the date tag `<YYYY>-<MM>-<DD>` for the generated image.
 
-NOTE: If the user name is not passed in, it defaults to `$(id -un)`.
+NOTE: If the user name is not passed in as shown above, it defaults to `$(id
+-un)`.
 
 NOTE: If there is already a user `<existing-user>` in the base image that
 matches the UID and GID of the host user `${USER}`, then use that user name
 `<existing-user>` instead of `${USER}` above.  In this case, the only effect
-will be to set the default user as `<existing-user>`.
+will be to set the default user as `<existing-user>`.  For this, use:
+
+```bash
+<this-dir>/add_user_container_build/build_container.sh \
+  codex-mull-trilinos-clang-19.1.6-openmpi-4.1.6:latest \
+  <existing-user>
+```
 
 NOTE: For Trilinos container images there is a user `runner` that has UID:GID =
 1000:1000.   And on WSL systems, you user is likely also UID:GID = 1000:000.  In
